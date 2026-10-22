@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Control Venta de Cigarros - CHARLY</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #151d30;
+      --bg-input: #0f172a;
+      --primary: #fbbf24;
+      --cyan: #00f2fe;
+      --success: #10b981;
+      --danger: #f43f5e;
+      --danger-bright: #ff3355;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #2a3652;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding-bottom: 40px;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #151d30;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--primary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .brand-signature {
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+      line-height: 1;
+    }
+
+    .app-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .shift-tabs {
+      display: flex;
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 55px;
+      z-index: 90;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: rgba(251, 191, 36, 0.05);
+    }
+
+    .tab-btn.tab-cal.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+      background: rgba(0, 242, 254, 0.05);
+    }
+
+    main {
+      padding: 14px;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .cigar-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cigar-title {
+      background: transparent;
+      border: none;
+      color: var(--danger-bright);
+      font-size: 1.25rem;
+      font-weight: 900;
+      outline: none;
+      width: 75%;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+    }
+
+    .section-box {
+      background: var(--bg-main);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .input-field {
+      width: 100%;
+      background: #151d30;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+    }
+
+    .input-field:focus { border-color: var(--cyan); }
+
+    .calculated-val {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--success);
+      padding: 6px 0;
+    }
+
+    .cost-box {
+      background: rgba(251, 191, 36, 0.05);
+      border: 1px dashed var(--primary);
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .cost-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .btn-add {
+      width: 100%;
+      background: var(--primary);
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-save-shift {
+      width: 100%;
+      background: linear-gradient(90deg, var(--success) 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .final-summary-card {
+      background: linear-gradient(145deg, #151d30 0%, #0b0f19 100%);
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+
+    .summary-header {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+    }
+
+    .breakdown-table th {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: left;
+      padding-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .breakdown-table td {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .global-calc-box {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .global-item .lbl {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .global-item .val {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .cal-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .cal-title-txt { font-weight: 800; font-size: 1rem; }
+    .cal-nav-btn { background: none; border: none; color: var(--cyan); cursor: pointer; }
+
+    .cal-grid-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .cal-weekday {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .cal-day-cell {
+      background: var(--bg-card);
+      border-radius: 10px;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
+    .cal-day-cell.has-data { border-color: var(--cyan); background: rgba(0, 242, 254, 0.1); }
+    .cal-day-cell.selected { border-color: var(--primary); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+
+    .history-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-top: 14px;
+      cursor: pointer;
+    }
+
+    .history-shift-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .btn-edit-date {
+      width: 100%;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .month-summary-card {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, #151d30 100%);
+      border: 2px solid var(--accent-purple);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .month-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px dashed var(--accent-purple);
+      padding-bottom: 6px;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      text-align: center;
+    }
+
+    .month-val {
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-signature">CHARLY</div>
+    <div class="app-title">
+      <i data-lucide="calculator"></i> Control Venta
+    </div>
+  </header>
+
+  <div class="shift-tabs">
+    <button class="tab-btn active" id="tab-btn-dia" onclick="switchShift('dia', this)">
+      <i data-lucide="sun" style="width:16px;"></i> DÍA
+    </button>
+    <button class="tab-btn" id="tab-btn-tarde" onclick="switchShift('tarde', this)">
+      <i data-lucide="sunset" style="width:16px;"></i> TARDE
+    </button>
+    <button class="tab-btn" id="tab-btn-noche" onclick="switchShift('noche', this)">
+      <i data-lucide="moon" style="width:16px;"></i> NOCHE
+    </button>
+    <button class="tab-btn tab-cal" id="tab-btn-cal" onclick="switchShift('calendario', this)">
+      <i data-lucide="calendar" style="width:16px;"></i> CALENDARIO
+    </button>
+  </div>
+
+  <main>
+    <section id="view-calculator" class="view active">
+      <div id="cigarrosContainer"></div>
+
+      <button class="btn-add" onclick="agregarCigarro()">
+        <i data-lucide="plus"></i> Agregar Otro Cigarro
+      </button>
+
+      <button class="btn-save-shift" onclick="guardarTurnoActual()">
+        <i data-lucide="save"></i> Guardar / Actualizar Turno
+      </button>
+
+      <div class="final-summary-card">
+        <div class="summary-header">
+          <i data-lucide="pie-chart"></i> Resumen Turno (<span id="txtTurnoActual">DÍA</span>) - <span id="txtFechaEditable" style="color:var(--cyan);"></span>
+        </div>
+
+        <table class="breakdown-table">
+          <thead>
+            <tr>
+              <th>Cigarro</th>
+              <th style="text-align:center;">Ventas Total</th>
+              <th style="text-align:right;">Ganancia</th>
+            </tr>
+          </thead>
+          <tbody id="breakdownBody"></tbody>
+        </table>
+
+        <div class="global-calc-box">
+          <div class="global-item">
+            <div class="lbl">Ventas Turno</div>
+            <div class="val" id="globalVentas" style="color:var(--cyan);">$0</div>
+          </div>
+          <div class="global-item">
+            <div class="lbl">Costo Turno</div>
+            <div class="val" id="globalCosto" style="color:var(--danger);">$0</div>
+          </div>
+          <div class="global-item">
+            <div class="lbl">Ganancia Neta</div>
+            <div class="val" id="globalGanancia" style="color:var(--success);">$0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-calendar" class="view">
+      <div class="cal-header-bar">
+        <button class="cal-nav-btn" onclick="cambiarMesCal(-1)"><i data-lucide="chevron-left"></i></button>
+        <div class="cal-title-txt" id="calMonthTitle">Mes Año</div>
+        <button class="cal-nav-btn" onclick="cambiarMesCal(1)"><i data-lucide="chevron-right"></i></button>
+      </div>
+
+      <div class="cal-grid-days" id="calGridHeader">
+        <div class="cal-weekday">Dom</div><div class="cal-weekday">Lun</div><div class="cal-weekday">Mar</div>
+        <div class="cal-weekday">Mié</div><div class="cal-weekday">Jue</div><div class="cal-weekday">Vie</div>
+        <div class="cal-weekday">Sáb</div>
+      </div>
+
+      <div class="cal-grid-days" id="calGridDays"></div>
+
+      <div id="historyDetails"></div>
+
+      <div class="month-summary-card">
+        <div class="month-title">
+          <i data-lucide="trending-up"></i> Total Acumulado del Mes (<span id="txtMesNombre"></span>)
+        </div>
+        <div class="month-grid">
+          <div>
+            <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Ventas del Mes</div>
+            <div class="month-val" id="monthTotalVentas" style="color:var(--cyan);">$0</div>
+          </div>
+          <div>
+            <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Ganancia del Mes</div>
+            <div class="month-val" id="monthTotalGanancia" style="color:var(--success);">$0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    let currentShift = 'dia';
+    let currentCalDate = new Date();
+    let selectedDateKey = new Date().toISOString().split('T')[0];
+
+    const emptyCigarro = () => ({
+      id: Date.now().toString() + Math.random(),
+      nombre: '',
+      costoCaja: '',
+      cajas: { dejaron: '', quedaron: '', precio: '' },
+      sueltos: { dejaron: '', quedaron: '', precio: '' }
+    });
+
+    let rawTurnos = localStorage.getItem('cigarros_turnos_v3') || localStorage.getItem('cigarros_turnos_backup');
+    let rawHist = localStorage.getItem('cigarros_historico_v3') || localStorage.getItem('cigarros_historico_backup');
+
+    let state = {
+      turnos: rawTurnos ? JSON.parse(rawTurnos) : {
+        dia: [emptyCigarro()],
+        tarde: [emptyCigarro()],
+        noche: [emptyCigarro()]
+      },
+      historico: rawHist ? JSON.parse(rawHist) : {}
+    };
+
+    function saveState() {
+      const turnosStr = JSON.stringify(state.turnos);
+      const histStr = JSON.stringify(state.historico);
+
+      localStorage.setItem('cigarros_turnos_v3', turnosStr);
+      localStorage.setItem('cigarros_historico_v3', histStr);
+      localStorage.setItem('cigarros_turnos_backup', turnosStr);
+      localStorage.setItem('cigarros_historico_backup', histStr);
+    }
+
+    function switchShift(shift, el) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      if (typeof el === 'string') {
+        const targetBtn = document.getElementById(`tab-btn-${el}`);
+        if(targetBtn) targetBtn.classList.add('active');
+      } else if (el) {
+        el.classList.add('active');
+      }
+
+      if (shift === 'calendario') {
+        document.getElementById('view-calculator').classList.remove('active');
+        document.getElementById('view-calendar').classList.add('active');
+        renderCalendar();
+      } else {
+        currentShift = shift;
+        document.getElementById('txtTurnoActual').innerText = shift.toUpperCase();
+        document.getElementById('txtFechaEditable').innerText = selectedDateKey;
+        document.getElementById('view-calendar').classList.remove('active');
+        document.getElementById('view-calculator').classList.add('active');
+
+        // Cargar datos de la fecha seleccionada si ya existían
+        if (state.historico[selectedDateKey] && state.historico[selectedDateKey][shift]) {
+          state.turnos[shift] = JSON.parse(JSON.stringify(state.historico[selectedDateKey][shift]));
+        }
+
+        renderCards();
+      }
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cigarrosContainer');
+      container.innerHTML = '';
+
+      const list = state.turnos[currentShift];
+
+      list.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'cigar-card';
+        card.dataset.idx = idx;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <input type="text" class="cigar-title" value="${item.nombre || ''}" placeholder="Cigarro..." oninput="updateData(${idx}, 'nombre', this.value)">
+            <button class="btn-delete" onclick="eliminarCigarro(${idx})"><i data-lucide="trash-2" style="width:18px;"></i></button>
+          </div>
+
+          <div class="section-box">
+            <div class="section-title"><i data-lucide="package" style="width:14px;"></i> Cajas</div>
+            <div class="input-grid">
+              <div class="input-group">
+                <label>Dejaron</label>
+                <input type="number" class="input-field" value="${item.cajas.dejaron ?? ''}" placeholder="0" oninput="updateSubData(${idx}, 'cajas', 'dejaron', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Quedaron</label>
+                <input type="number" class="input-field" value="${item.cajas.quedaron ?? ''}" placeholder="0" oninput="updateSubData(${idx}, 'cajas', 'quedaron', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Precio ($)</label>
+                <input type="number" class="input-field" value="${item.cajas.precio ?? ''}" placeholder="0" oninput="updateSubData(${idx}, 'cajas', 'precio', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Ventas (<span class="lbl-vend-cajas">0</span>)</label>
+                <div class="calculated-val val-tot-cajas">$0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-box">
+            <div class="section-title"><i data-lucide="box" style="width:14px;"></i> Sueltos (Cigarros)</div>
+            <div class="input-grid">
+              <div class="input-group">
+                <label>Dejaron</label>
+                <input type="number" class="input-field" value="${item.sueltos.dejaron ?? ''}" placeholder="0" oninput="updateSubData(${idx}, 'sueltos', 'dejaron', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Quedaron</label>
+                <input type="number" class="input-field" value="${item.sueltos.quedaron ?? ''}" placeholder="0" oninput="updateSubData(${idx}, 'sueltos', 'quedaron', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Precio ($)</label>
+                <input type="number" class="input-field" value="${item.sueltos.precio ?? ''}" placeholder="0" oninput="updateSubData(${idx}, 'sueltos', 'precio', this.value)">
+              </div>
+              <div class="input-group">
+                <label>Ventas (<span class="lbl-vend-sueltos">0</span>)</label>
+                <div class="calculated-val val-tot-sueltos">$0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cost-box">
+            <div class="cost-grid" style="margin-bottom: 6px;">
+              <div>
+                <span style="color:var(--text-muted);">Costo por Caja ($): </span>
+                <input type="number" class="input-field" style="width:85px; display:inline-block;" value="${item.costoCaja ?? ''}" placeholder="0" oninput="updateData(${idx}, 'costoCaja', this.value)">
+              </div>
+              <div>
+                <span style="color:var(--text-muted);">Total Ventas: </span>
+                <strong class="val-tot-cigarro" style="color:var(--cyan);">$0</strong>
+              </div>
+            </div>
+            <div class="cost-grid">
+              <div>
+                <span style="color:var(--text-muted);">Costo Suelto: </span>
+                <strong class="val-costo-suelto" style="color:var(--text-main);">$0</strong>
+              </div>
+              <div>
+                <strong style="color:var(--primary);">Ganancia: </strong>
+                <strong class="val-ganancia-cigarro" style="color:var(--success);">$0</strong>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      if (window.lucide) lucide.createIcons();
+      recalcularTodo();
+    }
+
+    function recalcularTodo() {
+      let globalVentasSum = 0;
+      let globalCostoSum = 0;
+      const breakdownBody = document.getElementById('breakdownBody');
+      breakdownBody.innerHTML = '';
+
+      const list = state.turnos[currentShift];
+
+      list.forEach((item, idx) => {
+        const card = document.querySelector(`.cigar-card[data-idx="${idx}"]`);
+        
+        const costoCajaNum = parseFloat(item.costoCaja) || 0;
+        const costoSueltoNum = costoCajaNum > 0 ? (costoCajaNum / 20) : 0;
+
+        const dejaronC = parseFloat(item.cajas.dejaron) || 0;
+        const quedaronC = parseFloat(item.cajas.quedaron) || 0;
+        const precioC = parseFloat(item.cajas.precio) || 0;
+        const vendidasCajas = Math.max(0, dejaronC - quedaronC);
+        const totalVentaCajas = vendidasCajas * precioC;
+        const costoVentaCajas = vendidasCajas * costoCajaNum;
+
+        const dejaronS = parseFloat(item.sueltos.dejaron) || 0;
+        const quedaronS = parseFloat(item.sueltos.quedaron) || 0;
+        const precioS = parseFloat(item.sueltos.precio) || 0;
+        const vendidosSueltos = Math.max(0, dejaronS - quedaronS);
+        const totalVentaSueltos = vendidosSueltos * precioS;
+        const costoVentaSueltos = vendidosSueltos * costoSueltoNum;
+
+        const totalVentaCigarro = totalVentaCajas + totalVentaSueltos;
+        const totalCostoCigarro = costoVentaCajas + costoVentaSueltos;
+        const totalGananciaCigarro = totalVentaCigarro - totalCostoCigarro;
+
+        globalVentasSum += totalVentaCigarro;
+        globalCostoSum += totalCostoCigarro;
+
+        if (card) {
+          card.querySelector('.lbl-vend-cajas').innerText = vendidasCajas;
+          card.querySelector('.val-tot-cajas').innerText = `$${totalVentaCajas.toFixed(0)}`;
+          card.querySelector('.lbl-vend-sueltos').innerText = vendidosSueltos;
+          card.querySelector('.val-tot-sueltos').innerText = `$${totalVentaSueltos.toFixed(0)}`;
+          card.querySelector('.val-tot-cigarro').innerText = `$${totalVentaCigarro.toFixed(0)}`;
+          card.querySelector('.val-costo-suelto').innerText = `$${costoSueltoNum.toFixed(1)}`;
+
+          const ganEl = card.querySelector('.val-ganancia-cigarro');
+          ganEl.innerText = `$${Math.round(totalGananciaCigarro)}`;
+          ganEl.style.color = totalGananciaCigarro >= 0 ? 'var(--success)' : 'var(--danger)';
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="color:var(--danger-bright); font-weight:800;">${item.nombre || 'Sin nombre'}</td>
+          <td style="text-align:center; color:var(--cyan);">$${totalVentaCigarro.toFixed(0)}</td>
+          <td style="text-align:right; color:${totalGananciaCigarro >= 0 ? 'var(--success)' : 'var(--danger)'};">$${Math.round(totalGananciaCigarro)}</td>
+        `;
+        breakdownBody.appendChild(tr);
+      });
+
+      const globalGananciaSum = globalVentasSum - globalCostoSum;
+
+      document.getElementById('globalVentas').innerText = `$${globalVentasSum.toFixed(0)}`;
+      document.getElementById('globalCosto').innerText = `$${Math.round(globalCostoSum)}`;
+      
+      const elGan = document.getElementById('globalGanancia');
+      elGan.innerText = `$${Math.round(globalGananciaSum)}`;
+      elGan.style.color = globalGananciaSum >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+
+    function updateData(idx, key, val) {
+      state.turnos[currentShift][idx][key] = val;
+      saveState();
+      recalcularTodo();
+    }
+
+    function updateSubData(idx, section, key, val) {
+      state.turnos[currentShift][idx][section][key] = val;
+      saveState();
+      recalcularTodo();
+    }
+
+    function agregarCigarro() {
+      state.turnos[currentShift].push(emptyCigarro());
+      saveState();
+      renderCards();
+    }
+
+    function eliminarCigarro(idx) {
+      if (confirm(`¿Borrar este cigarro?`)) {
+        state.turnos[currentShift].splice(idx, 1);
+        saveState();
+        renderCards();
+      }
+    }
+
+    function guardarTurnoActual() {
+      if (!state.historico[selectedDateKey]) {
+        state.historico[selectedDateKey] = {};
+      }
+
+      state.historico[selectedDateKey][currentShift] = JSON.parse(JSON.stringify(state.turnos[currentShift]));
+      saveState();
+
+      alert(`✅ ¡Cálculo guardado con éxito para la fecha ${selectedDateKey} (${currentShift.toUpperCase()})!`);
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('calGridDays');
+      grid.innerHTML = '';
+
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      const year = currentCalDate.getFullYear();
+      const month = currentCalDate.getMonth();
+
+      document.getElementById('calMonthTitle').innerText = `${monthNames[month]} ${year}`;
+      document.getElementById('txtMesNombre').innerText = monthNames[month];
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day-cell empty';
+        grid.appendChild(empty);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell';
+        cell.innerText = day;
+
+        if (state.historico[dateKey] && Object.keys(state.historico[dateKey]).length > 0) {
+          cell.classList.add('has-data');
+        }
+
+        if (dateKey === selectedDateKey) {
+          cell.classList.add('selected');
+        }
+
+        cell.onclick = () => {
+          selectedDateKey = dateKey;
+          renderCalendar();
+          mostrarHistorialDia(dateKey);
+        };
+
+        grid.appendChild(cell);
+      }
+
+      mostrarHistorialDia(selectedDateKey);
+      calcularTotalMes(year, month);
+    }
+
+    function cambiarMesCal(delta) {
+      currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function mostrarHistorialDia(dateKey) {
+      const container = document.getElementById('historyDetails');
+      container.innerHTML = '';
+
+      const dayData = state.historico[dateKey];
+
+      if (!dayData || Object.keys(dayData).length === 0) {
+        container.innerHTML = `
+          <p style="text-align:center; color:var(--text-muted); padding:10px 0;">Sin registros para el ${dateKey}.</p>
+          <button class="btn-edit-date" onclick="crearYEditarTurno('${dateKey}')">
+            <i data-lucide="plus-circle" style="width:16px;"></i> Registrar Turno para esta fecha
+          </button>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      const turnosKeys = ['dia', 'tarde', 'noche'];
+
+      turnosKeys.forEach(tKey => {
+        if (dayData[tKey]) {
+          let tVentas = 0;
+          let tGanancias = 0;
+
+          dayData[tKey].forEach(item => {
+            const costoCaja = parseFloat(item.costoCaja) || 0;
+            const costoSuelto = costoCaja > 0 ? (costoCaja / 20) : 0;
+
+            const vendCajas = Math.max(0, (parseFloat(item.cajas.dejaron) || 0) - (parseFloat(item.cajas.quedaron) || 0));
+            const vCajas = vendCajas * (parseFloat(item.cajas.precio) || 0);
+            const gCajas = vendCajas * ((parseFloat(item.cajas.precio) || 0) - costoCaja);
+
+            const vendSueltos = Math.max(0, (parseFloat(item.sueltos.dejaron) || 0) - (parseFloat(item.sueltos.quedaron) || 0));
+            const vSueltos = vendSueltos * (parseFloat(item.sueltos.precio) || 0);
+            const gSueltos = vendSueltos * ((parseFloat(item.sueltos.precio) || 0) - costoSuelto);
+
+            tVentas += (vCajas + vSueltos);
+            tGanancias += (gCajas + gSueltos);
+          });
+
+          const hCard = document.createElement('div');
+          hCard.className = 'history-card';
+          hCard.onclick = () => editarTurnoGuardado(dateKey, tKey);
+
+          hCard.innerHTML = `
+            <div class="history-shift-title">
+              <span>Turno: ${tKey.toUpperCase()} <i data-lucide="edit-2" style="width:14px; margin-left:4px;"></i></span>
+              <span style="color:var(--cyan);">$${tVentas.toFixed(0)} Ventas</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-top:6px;">
+              <span style="color:var(--text-muted);">Ganancia registrada (Toca para editar):</span>
+              <strong style="color:${tGanancias >= 0 ? 'var(--success)' : 'var(--danger)'};">$${Math.round(tGanancias)}</strong>
+            </div>
+          `;
+          container.appendChild(hCard);
+        }
+      });
+
+      const btnEdit = document.createElement('button');
+      btnEdit.className = 'btn-edit-date';
+      btnEdit.innerHTML = `<i data-lucide="edit-3" style="width:16px;"></i> Editar / Añadir Turno al ${dateKey}`;
+      btnEdit.onclick = () => crearYEditarTurno(dateKey);
+      container.appendChild(btnEdit);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function crearYEditarTurno(dateKey) {
+      selectedDateKey = dateKey;
+      switchShift('dia', 'dia');
+    }
+
+    function calcularTotalMes(year, month) {
+      let mesVentasSum = 0;
+      let mesGananciaSum = 0;
+
+      const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+
+      Object.keys(state.historico).forEach(dateKey => {
+        if (dateKey.startsWith(prefix)) {
+          const dayData = state.historico[dateKey];
+          Object.keys(dayData).forEach(tKey => {
+            dayData[tKey].forEach(item => {
+              const costoCaja = parseFloat(item.costoCaja) || 0;
+              const costoSuelto = costoCaja > 0 ? (costoCaja / 20) : 0;
+
+              const vendCajas = Math.max(0, (parseFloat(item.cajas.dejaron) || 0) - (parseFloat(item.cajas.quedaron) || 0));
+              const vCajas = vendCajas * (parseFloat(item.cajas.precio) || 0);
+              const gCajas = vendCajas * ((parseFloat(item.cajas.precio) || 0) - costoCaja);
+
+              const vendSueltos = Math.max(0, (parseFloat(item.sueltos.dejaron) || 0) - (parseFloat(item.sueltos.quedaron) || 0));
+              const vSueltos = vendSueltos * (parseFloat(item.sueltos.precio) || 0);
+              const gSueltos = vendSueltos * ((parseFloat(item.sueltos.precio) || 0) - costoSuelto);
+
+              mesVentasSum += (vCajas + vSueltos);
+              mesGananciaSum += (gCajas + gSueltos);
+            });
+          });
+        }
+      });
+
+      document.getElementById('monthTotalVentas').innerText = `$${Math.round(mesVentasSum)}`;
+      const elGanMes = document.getElementById('monthTotalGanancia');
+      elGanMes.innerText = `$${Math.round(mesGananciaSum)}`;
+      elGanMes.style.color = mesGananciaSum >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+
+    function editarTurnoGuardado(dateKey, shiftKey) {
+      selectedDateKey = dateKey;
+      if (state.historico[dateKey] && state.historico[dateKey][shiftKey]) {
+        state.turnos[shiftKey] = JSON.parse(JSON.stringify(state.historico[dateKey][shiftKey]));
+        saveState();
+      }
+      switchShift(shiftKey, shiftKey);
+    }
+
+    renderCards();
+  </script>
+</body>
+</html>
