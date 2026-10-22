@@ -2,16 +2,23 @@
   "short_name": "Cigarros CHARLY",
   "name": "Control Venta de Cigarros - CHARLY",
   "description": "Calculadora e historial de ventas de cigarros por turnos.",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    }
-  ],
   "start_url": "./index.html",
   "background_color": "#0b0f19",
   "theme_color": "#0b0f19",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050239.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050239.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
